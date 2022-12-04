@@ -16,7 +16,7 @@
 #include "helper.h"
 
 /**
- * @brief Mtrix implementation
+ * @brief Matrix implementation
  * 
  */
 typedef struct Matrix {
@@ -60,7 +60,7 @@ void randomize_matrix(Matrix *m){
             struct timespec ts;
             timespec_get(&ts, TIME_UTC);
             srand(ts.tv_nsec);
-            m->matrix[i][j] = rand() % 10;
+            m->matrix[i][j] = rand() % 2;
         }
     }
 }
