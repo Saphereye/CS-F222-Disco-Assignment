@@ -23,26 +23,26 @@ void panic(const char* arr) {
  * 
  */
 typedef struct Matrix {
-    size_t     row_size;
-    size_t     column_size;
-    size_t**    matrix;
+    size_t size;
+    size_t edges;
+    size_t** matrix;
 } Matrix;
 
 /**
  * @brief Create a matrix object
  * 
- * @param rows 
- * @param cols 
+ * @param size 
+ * @param edges 
  * @return Matrix 
  */
-Matrix create_matrix(size_t rows, size_t cols) {
-    Matrix temp = {rows, cols, (size_t**)calloc(rows, sizeof(size_t*))};
+Matrix create_matrix(size_t size, size_t edges) {
+    Matrix temp = {size, edges, (size_t**)calloc(size, sizeof(size_t*))};
 
     if (temp.matrix == NULL)
         panic("Matrix not initialised");
 
-    for (size_t i = 0; i < rows; i++) {
-        temp.matrix[i] = (size_t*)calloc(cols, sizeof temp.matrix[i][0]);
+    for (size_t i = 0; i < size; i++) {
+        temp.matrix[i] = (size_t*)calloc(size, sizeof temp.matrix[i][0]);
 
         if (temp.matrix[i] == NULL)
             panic("Matrix row not initialised");
@@ -57,14 +57,20 @@ Matrix create_matrix(size_t rows, size_t cols) {
  * @param m 
  */
 void print_matrix(const Matrix* m) {
-    for(size_t i = 0; i < m->row_size ; i++){
-        for(size_t j = 0; j < m->column_size; j++){
+    for(size_t i = 0; i < m->size ; i++){
+        for(size_t j = 0; j < m->size; j++){
             printf("%li ", m->matrix[i][j]);
         }
         printf("\n");
     }
 }
 
+/**
+ * @brief Read from file and write to matrix
+ * 
+ * @param file_name 
+ * @return Matrix 
+ */
 Matrix read_file_to_matrix(const char* file_name) {
     FILE* file;
     size_t num;
@@ -79,7 +85,7 @@ Matrix read_file_to_matrix(const char* file_name) {
     fscanf(file, "%ld\n", &num); size_t num_of_edges = num;
 
     // Initialize adjacency matrix
-    Matrix m = create_matrix(num_of_nodes, num_of_nodes);
+    Matrix m = create_matrix(num_of_nodes, num_of_edges);
 
     // Calling inputs from file line by line till EOF
     while(1) {
@@ -99,8 +105,14 @@ Matrix read_file_to_matrix(const char* file_name) {
     return m;
 }
 
+/**
+ * @brief Get the degree sequence object
+ * 
+ * @param m 
+ * @return size_t* 
+ */
 size_t* get_degree_sequence(const Matrix* m) {
-    size_t num_of_nodes = m->row_size;
+    size_t num_of_nodes = m->size;
 
     // Get the degress of each edge
     size_t* node_degree = (size_t*)calloc(num_of_nodes, sizeof(size_t));
@@ -115,6 +127,12 @@ size_t* get_degree_sequence(const Matrix* m) {
     return node_degree;
 }
 
+/**
+ * @brief Print array in pretty way
+ * 
+ * @param array 
+ * @param size 
+ */
 void print_array(const size_t* array, size_t size) {
     for(size_t i = 0; i < size; i++) {
         printf("%ld ", array[i]);
@@ -122,6 +140,12 @@ void print_array(const size_t* array, size_t size) {
     printf("\n");
 }
 
+/**
+ * @brief Rotate array in clockwise manner
+ * 
+ * @param array 
+ * @param array_size 
+ */
 void clockwise_rotate_array_once(size_t* array, size_t array_size) {
     size_t last_element = array[array_size-1];
 
@@ -156,32 +180,47 @@ int compare_sizet_arrays(const size_t* array1, const size_t* array2, size_t arra
     }
 }
 
+void show_bijection_table(size_t offset, size_t max_size) {
+    for(int i = 1; i <= max_size; i++) {
+        printf("%d %d\n", i, (i+offset)%max_size);
+    }
+}
+
 int main(int argc, char** argv) {
     if (argc <= 1) panic("Input file not provided");
-    printf("Hello Wolrd");
     Matrix m1 = read_file_to_matrix(argv[1]);
     Matrix m2 = read_file_to_matrix(argv[2]);
+    print_matrix(&m1);
+    printf("\n");
+    print_matrix(&m2);
+
+    if(!(m1.size == m2.size && m1.edges == m2.edges)) {
+        printf("Not Isomorphic :(\n");
+        exit(EXIT_SUCCESS);
+    }
 
     size_t* degree_sequence_of_matrix_1 = get_degree_sequence(&m1);
     size_t* degree_sequence_of_matrix_2 = get_degree_sequence(&m2);
 
     printf("Matrix 1: ");
-    print_array(degree_sequence_of_matrix_1, m1.row_size);
+    print_array(degree_sequence_of_matrix_1, m1.size);
     printf("Matrix 2: ");
-    print_array(degree_sequence_of_matrix_2, m2.row_size);
+    print_array(degree_sequence_of_matrix_2, m2.size);
 
-    size_t array1[] = {3, 2, 3, 2, 2};
-    size_t array2[] = {2, 2, 2, 2};
-    printf("Comparison: %d\n", compare_sizet_arrays(array1, array2, 5, 4));
-
-    clockwise_rotate_array_once(degree_sequence_of_matrix_1, m1.row_size);
-    for(size_t count = 0; count < m2.row_size; count++) {
-        if(compare_sizet_arrays(degree_sequence_of_matrix_1, degree_sequence_of_matrix_2, m1.row_size, m2.row_size) == 0) {
-            printf("Isomorphic :)");
+    clockwise_rotate_array_once(degree_sequence_of_matrix_1, m1.size);
+    size_t count = 0;
+    for(count = 0; count < m2.size; count++) {
+        printf("Matrix 2 after rot: ");
+        print_array(degree_sequence_of_matrix_2, m2.size);
+        if(compare_sizet_arrays(degree_sequence_of_matrix_1, degree_sequence_of_matrix_2, m1.size, m2.size) == 0) {
+            printf("Isomorphic :)\n");
+            printf("Rots: %ld\n", count);
+            show_bijection_table(count-1, m2.size);
             exit(EXIT_SUCCESS);
         }
-        clockwise_rotate_array_once(degree_sequence_of_matrix_2, m2.row_size);
+        clockwise_rotate_array_once(degree_sequence_of_matrix_2, m2.size);
     }
+    printf("Rots: %ld\n", count);
 
     free(degree_sequence_of_matrix_1);
     free(degree_sequence_of_matrix_2);
