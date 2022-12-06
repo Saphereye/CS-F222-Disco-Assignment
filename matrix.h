@@ -49,36 +49,6 @@ Matrix create_matrix(int rows, int cols) {
 }
 
 /**
- * @brief Randomize given matrix
- * 
- * @param m 
- */
-void randomize_matrix(Matrix *m){
-    int i,j;
-    for(i = 0; i < m->rowSize ; i++){
-        for(j = 0; j < m->columnSize; j++){
-            struct timespec ts;
-            timespec_get(&ts, TIME_UTC);
-            srand(ts.tv_nsec);
-            m->matrix[i][j] = rand() % 2;
-        }
-    }
-}
-
-/**
- * @brief Create a random matrix object
- * 
- * @param rows 
- * @param cols 
- * @return Matrix 
- */
-Matrix create_rand_matrix(int rows, int cols) {
-    Matrix temp = create_matrix(rows,cols);
-    randomize_matrix(&temp);
-    return temp;
-}
-
-/**
  * @brief Print matrix value to stdout
  * 
  * @param m 
@@ -91,13 +61,6 @@ void print_matrix(const Matrix* m) {
         printf("\n");
     }
 }
-
-Matrix add_matrix(const Matrix* a, const Matrix* b);
-
-Matrix sub_matrix(const Matrix* a, const Matrix* b);
-
-Matrix mul_matrix(const Matrix* a, const Matrix* b);
-
 
 #endif
 

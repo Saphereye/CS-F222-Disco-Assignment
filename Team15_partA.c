@@ -6,8 +6,56 @@
  */
 
 #include <stdio.h>
-#include "matrix.h"
-#include "helper.h"
+#include <stdlib.h>
+
+#define RESET   "\033[0m"
+#define RED     "\033[31m"      /* Red */
+
+/**
+ * @brief Panics and closes program, based on error message 
+ * 
+ * @param arr 
+ */
+void panic(const char arr[]) {
+    printf(RED);
+    printf("%s", arr);
+    printf(RESET);
+    printf("\n");
+    exit(EXIT_FAILURE);
+}
+
+/**
+ * @brief Matrix implementation
+ * 
+ */
+typedef struct Matrix {
+    int rowSize;
+    int columnSize;
+    long int** matrix;
+} Matrix;
+
+/**
+ * @brief Create a matrix object
+ * 
+ * @param rows 
+ * @param cols 
+ * @return Matrix 
+ */
+Matrix create_matrix(int rows, int cols) {
+    Matrix temp = {rows, cols, (long int **)calloc(rows, sizeof(long int *))};
+
+    if (temp.matrix == NULL)
+        panic("Matrix not initialised");
+
+    for (int i = 0; i < rows; i++) {
+        temp.matrix[i] = (long int *)calloc(cols, sizeof temp.matrix[i][0]);
+
+        if (temp.matrix[i] == NULL)
+            panic("Matrix row not initialised");
+    }
+
+    return temp;
+}
 
 int main(int argc, char** argv) {
     if (argc <= 1) panic("Input file not provided");

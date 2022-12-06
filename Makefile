@@ -1,15 +1,16 @@
 CC = gcc
-LINKERFLAG = -Wall -Wextra -pipe -pedantic
+FLAGS = -Wall -Wextra -pipe -std=c99
 
-SRC := Team15.c
+SRC := Team15_partB.c
 OUT := a.out
-INPUT := input.txt
+INPUT1 := input1.txt
+INPUT2 := input2.txt
 
 all: run clean
 
 run: $(SRC) $(INPUT)
-	@$(CC) $(SRC) $(LINKERFLAG)
-	@./$(OUT) $(INPUT)
+	@$(CC) $(SRC) $(FLAGS)
+	@./$(OUT) $(INPUT1) $(INPUT2)
 
 clean: $(OUT)
 	@rm $(OUT)
