@@ -10,7 +10,7 @@ all: run clean
 
 run: $(SRC) $(INPUT)
 	@$(CC) $(SRC) $(FLAGS)
-	@./$(OUT) $(INPUT1) $(INPUT2)
+	@time ./$(OUT) $(INPUT1) $(INPUT2)
 
 clean: $(OUT)
 	@rm $(OUT)
