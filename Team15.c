@@ -122,47 +122,41 @@ Matrix read_file_to_matrix(const char* file_name) {
 }
 
 /**
- * @brief Get the nth permutation object
+ * @brief Get the next permutation of arr
  * 
- * @param array 
+ * @param arr 
  * @param array_size 
- * @param nth_permutation from 0 to (n!)-1
- * @return int* 
  */
-size_t* get_nth_permutation(const size_t* array, size_t array_size, size_t nth_permutation) {
-    int j, k = 0;
-    size_t *fact = (size_t*)calloc(array_size, sizeof(size_t));
-    size_t *perm = (size_t*)calloc(array_size, sizeof(size_t));
-
-    // compute factorial numbers
-    fact[k] = 1;
-    while (++k < array_size)
-        fact[k] = fact[k - 1] * k;
-
-    // compute factorial code
-    for (k = 0; k < array_size; ++k)
-    {
-        perm[k] = nth_permutation / fact[array_size - 1 - k];
-        nth_permutation = nth_permutation % fact[array_size - 1 - k];
+void goto_next_permutation(size_t* arr, size_t array_size) {
+    // Find the longest decreasing suffix
+    int i = array_size - 1;
+    while (i > 0 && arr[i - 1] >= arr[i]) {
+        i -= 1;
+    }
+    if (i <= 0) {
+        return;  // The array is already at the last permutation
     }
 
-    // readjust values to obtain the permutation
-    // start from the end and check if preceding values are lower
-    for (k = array_size - 1; k > 0; --k)
-        for (j = k - 1; j >= 0; --j)
-            if (perm[j] <= perm[k])
-                perm[k]++;
+    // Find the rightmost element that is greater than the pivot
+    int j = array_size - 1;
+    while (arr[j] <= arr[i - 1]) {
+        j -= 1;
+    }
 
-    size_t* permutated_array = (size_t*)calloc(array_size, sizeof(size_t));
+    // Swap the pivot with the rightmost element that is greater than the pivot
+    int temp = arr[i - 1];
+    arr[i - 1] = arr[j];
+    arr[j] = temp;
 
-    // print permutation
-    for (k = 0; k < array_size; ++k)
-        permutated_array[k] = array[perm[k]];
-
-    free(fact);
-    free(perm);
-
-    return permutated_array;
+    // Reverse the suffix
+    int start = i, end = array_size - 1;
+    while (start < end) {
+        temp = arr[start];
+        arr[start] = arr[end];
+        arr[end] = temp;
+        start += 1;
+        end -= 1;
+    }
 }
 
 /**
@@ -207,19 +201,20 @@ int main(int argc, char** argv) {
     // Make an array from 1..m1.size-1, signifying the nodes and their subsequent permutation
     size_t* num_array = (size_t*)calloc(m1.size, sizeof(size_t));
 
+    // Initialise array as [1, 2, 3,..., m1.size]
     for(size_t i = 0; i < m1.size; i++) {
         num_array[i] = i;
     }
 
     for(int num = 0; num < factorial(m1.size); num++) {
-        // Generate appropriately permutated matrix of m1 and store in m_new
-        size_t* permutation = get_nth_permutation(num_array, m1.size, num);
+        // Go to the next lexicographical permutation (using next permutation algorithm)
+        goto_next_permutation(num_array, m1.size);
 
         Matrix new_matrix = create_matrix(m1.size, m1.edges);
 
         for(size_t i = 0; i < m1.size ; i++){
             for(size_t j = 0; j < m1.size; j++){
-                new_matrix.matrix[permutation[i]][permutation[j]] = m1.matrix[i][j];
+                new_matrix.matrix[num_array[i]][num_array[j]] = m1.matrix[i][j];
             }
         }
 
@@ -227,12 +222,14 @@ int main(int argc, char** argv) {
         if(is_equal_matrix(&new_matrix, &m2)) {
             printf("Isomorphic\n");
             for(int i = 0; i < m1.size; i++) {
-                printf("%d %ld\n", i+1, permutation[i]+1);
+                printf("%d %ld\n", i+1, num_array[i]+1);
             }
             exit(EXIT_SUCCESS);
 
         }
     }
+
+    free(num_array);
 
     // If not found then not isomorphic
     printf("Not Isomorphic :(\n");
