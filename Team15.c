@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define RESET   "\033[0m"
 #define RED     "\033[31m"      /* Red */
@@ -122,19 +123,20 @@ Matrix read_file_to_matrix(const char* file_name) {
 }
 
 /**
- * @brief Get the next permutation of arr
+ * @brief 
  * 
  * @param arr 
  * @param array_size 
+ * @return bool Returns 0 if all permutations are done
  */
-void goto_next_permutation(size_t* arr, size_t array_size) {
+bool goto_next_permutation(size_t* arr, size_t array_size) {
     // Find the longest decreasing suffix
     int i = array_size - 1;
     while (i > 0 && arr[i - 1] >= arr[i]) {
         i -= 1;
     }
     if (i <= 0) {
-        return;  // The array is already at the last permutation
+        return false;  // The array is already at the last permutation
     }
 
     // Find the rightmost element that is greater than the pivot
@@ -157,6 +159,8 @@ void goto_next_permutation(size_t* arr, size_t array_size) {
         start += 1;
         end -= 1;
     }
+
+    return true;
 }
 
 /**
@@ -206,10 +210,8 @@ int main(int argc, char** argv) {
         num_array[i] = i;
     }
 
-    for(int num = 0; num < factorial(m1.size); num++) {
-        // Go to the next lexicographical permutation (using next permutation algorithm)
-        goto_next_permutation(num_array, m1.size);
-
+    // While all permutation have not been checked
+    while(goto_next_permutation(num_array, m1.size)) {
         Matrix new_matrix = create_matrix(m1.size, m1.edges);
 
         for(size_t i = 0; i < m1.size ; i++){
@@ -221,8 +223,8 @@ int main(int argc, char** argv) {
         // Compare with m2.matrix, if match then Isomorphic, also print the bijection
         if(is_equal_matrix(&new_matrix, &m2)) {
             printf("Isomorphic\n");
-            for(int i = 0; i < m1.size; i++) {
-                printf("%d %ld\n", i+1, num_array[i]+1);
+            for(size_t i = 0; i < m1.size; i++) {
+                printf("%ld %ld\n", i+1, num_array[i]+1);
             }
             exit(EXIT_SUCCESS);
 
