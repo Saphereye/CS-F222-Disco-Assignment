@@ -82,7 +82,6 @@ int is_equal_matrix(const Matrix* m1, const Matrix* m2) {
  */
 Matrix read_file_to_matrix(const char* file_name) {
     FILE* file;
-    size_t num;
 
     file = fopen(file_name, "r");
 
@@ -92,20 +91,18 @@ Matrix read_file_to_matrix(const char* file_name) {
         exit(EXIT_FAILURE);
     }
 
+    size_t num_of_nodes, num_of_edges, parent, child;
+
     // Get the num of nodes and edges
-    fscanf(file, "%ld\n", &num); size_t num_of_nodes = num;
-    fscanf(file, "%ld\n", &num); size_t num_of_edges = num;
+    fscanf(file, "%ld\n", &num_of_nodes);
+    fscanf(file, "%ld\n", &num_of_edges);
 
     // Initialize adjacency matrix
     Matrix m = create_matrix(num_of_nodes, num_of_edges);
 
     // Calling inputs from file line by line till EOF
     while(1) {
-        if (fscanf(file, "%ld ", &num) == EOF) break;
-        size_t parent = num;
-
-        if (fscanf(file, "%ld\n", &num) == EOF) break;
-        size_t child = num;
+        if (fscanf(file, "%ld %ld\n", &parent, &child) == EOF) break;
 
         if((parent > num_of_nodes) || (child > num_of_nodes)) {
             printf("%sVertex index(%ld or %ld) exceeds total number of vertices(%ld)%s\n", RED, parent, child, num_of_nodes, RESET);
