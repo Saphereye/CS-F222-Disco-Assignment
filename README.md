@@ -2,9 +2,9 @@ How to run program
 ==================
 Requirements
 ------------
-1. Bash
-2. gcc
-3. make
+1. `bash`
+2. `gcc` and `c99`
+3. `make`
 
 Steps
 -----
