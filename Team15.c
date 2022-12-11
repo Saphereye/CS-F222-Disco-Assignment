@@ -1,6 +1,12 @@
+/**
+ * @file Team15.c
+ * @brief Reads details about 2 graphs and tells if isomorphic or not
+ * @author Adarsh Das (2021A7PS1511H)
+ * @author Shivam Atul Trivedi (2021A7PS1512H)
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stdbool.h>
 
 #define RESET   "\033[0m"
@@ -171,7 +177,7 @@ int main(int argc, char** argv) {
         num_array[i] = i;
     
     // While all permutation have not been checked
-    while(goto_next_permutation(num_array, m1.size)) {
+    do {
         Matrix new_matrix = create_matrix(m1.size, m1.edges);
 
         for(size_t i = 0; i < m1.size ; i++)
@@ -186,8 +192,8 @@ int main(int argc, char** argv) {
             exit(EXIT_SUCCESS);
 
         }
-    }
-
+    } while (goto_next_permutation(num_array, m1.size));
+    
     free(num_array);
 
     // If not found then not isomorphic
