@@ -1,4 +1,4 @@
-def next_permutation(arr):
+def next_permutation(arr: list[int]):
     # Find the longest decreasing suffix
     i = len(arr) - 1
     while i > 0 and arr[i - 1] >= arr[i]:

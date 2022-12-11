@@ -50,28 +50,20 @@ Matrix create_matrix(size_t size, size_t edges) {
 }
 
 /**
- * @brief Print matrix value to stdout
- * 
- * @param m 
+ * @brief Compare two matrices
+ *
+ * @param m1
+ * @param m2
  */
-void print_matrix(const Matrix* m) {
-    for(size_t i = 0; i < m->size ; i++){
-        for(size_t j = 0; j < m->size; j++){
-            printf("%li ", m->matrix[i][j]);
-        }
-        printf("\n");
-    }
-}
-
-int is_equal_matrix(const Matrix* m1, const Matrix* m2) {
+bool is_equal_matrix(const Matrix* m1, const Matrix* m2) {
     for(size_t i = 0; i < m1->size ; i++){
         for(size_t j = 0; j < m1->size; j++){
             if(m1->matrix[i][j] != m2->matrix[i][j])
-                return 0;
+                return false;
         }
     }
 
-    return 1;
+    return true;
 }
 
 /**
@@ -94,8 +86,7 @@ Matrix read_file_to_matrix(const char* file_name) {
     size_t num_of_nodes, num_of_edges, parent, child;
 
     // Get the num of nodes and edges
-    fscanf(file, "%ld\n", &num_of_nodes);
-    fscanf(file, "%ld\n", &num_of_edges);
+    fscanf(file, "%ld\n%ld\n", &num_of_nodes, &num_of_edges);
 
     // Initialize adjacency matrix
     Matrix m = create_matrix(num_of_nodes, num_of_edges);
@@ -120,7 +111,7 @@ Matrix read_file_to_matrix(const char* file_name) {
 }
 
 /**
- * @brief 
+ * @brief Permutates the array to it's next lexicographical permutation
  * 
  * @param arr 
  * @param array_size 
@@ -160,33 +151,6 @@ bool goto_next_permutation(size_t* arr, size_t array_size) {
     return true;
 }
 
-/**
- * @brief Print array in pretty way
- * 
- * @param array 
- * @param size 
- */
-void print_array(const size_t* array, size_t size) {
-    for(size_t i = 0; i < size; i++) {
-        printf("%ld ", array[i]);
-    }
-    printf("\n");
-}
-
-/**
- * @brief Return factorial of num
- * 
- * @param n 
- * @return size_t 
- */
-size_t factorial(size_t n) {
-    size_t output = 1;
-    for(size_t i = 1; i <= n; i++)
-        output *= i;
-    return output;
-}
-
-
 int main(int argc, char** argv) {
     if (argc <= 1) panic("Input file not provided");
 
@@ -203,26 +167,22 @@ int main(int argc, char** argv) {
     size_t* num_array = (size_t*)calloc(m1.size, sizeof(size_t));
 
     // Initialise array as [1, 2, 3,..., m1.size]
-    for(size_t i = 0; i < m1.size; i++) {
+    for(size_t i = 0; i < m1.size; i++)
         num_array[i] = i;
-    }
-
+    
     // While all permutation have not been checked
     while(goto_next_permutation(num_array, m1.size)) {
         Matrix new_matrix = create_matrix(m1.size, m1.edges);
 
-        for(size_t i = 0; i < m1.size ; i++){
-            for(size_t j = 0; j < m1.size; j++){
+        for(size_t i = 0; i < m1.size ; i++)
+            for(size_t j = 0; j < m1.size; j++)
                 new_matrix.matrix[num_array[i]][num_array[j]] = m1.matrix[i][j];
-            }
-        }
 
         // Compare with m2.matrix, if match then Isomorphic, also print the bijection
         if(is_equal_matrix(&new_matrix, &m2)) {
             printf("Isomorphic\n");
-            for(size_t i = 0; i < m1.size; i++) {
+            for(size_t i = 0; i < m1.size; i++)
                 printf("%ld %ld\n", i+1, num_array[i]+1);
-            }
             exit(EXIT_SUCCESS);
 
         }

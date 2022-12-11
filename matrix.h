@@ -63,4 +63,3 @@ void print_matrix(const Matrix* m) {
 }
 
 #endif
-

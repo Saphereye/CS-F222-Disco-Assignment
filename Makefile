@@ -1,5 +1,5 @@
 CC = gcc
-FLAGS = -Wall -Wextra -pipe -std=c99
+FLAGS = -Wall -Wextra -Wunused -pipe -std=c99
 
 SRC := Team15.c
 OUT := a.out
@@ -10,7 +10,7 @@ all: run clean
 
 run: $(SRC) $(INPUT)
 	@$(CC) $(SRC) $(FLAGS)
-	@time ./$(OUT) $(INPUT1) $(INPUT2)
+	@./$(OUT) $(INPUT1) $(INPUT2)
 
 clean: $(OUT)
 	@rm $(OUT)
